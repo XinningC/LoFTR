@@ -6,7 +6,8 @@ __pycache__/
 *.pth
 tmp.*
 */.ipynb_checkpoints/*
-
+*.bash
+Debug_Proxy.py
 logs/
 weights/
 dump/
