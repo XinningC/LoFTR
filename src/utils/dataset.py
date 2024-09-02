@@ -104,7 +104,7 @@ def read_megadepth_gray(path, resize=None, df=None, padding=False, augment_fn=No
     """
     # read image
     image = imread_gray(path, augment_fn, client=MEGADEPTH_CLIENT)
-
+    # print(f'path:{path}')
     # resize image
     w, h = image.shape[1], image.shape[0]
     w_new, h_new = get_resized_wh(w, h, resize)
@@ -135,6 +135,13 @@ def read_megadepth_depth(path, pad_to=None):
     depth = torch.from_numpy(depth).float()  # (h, w)
     return depth
 
+
+def read_rgb_ir_depth(img, pad_to=None):
+    depth = np.ones(shape = (img.shape[1],img.shape[2]))
+    if pad_to is not None:
+        depth, _ = pad_bottom_right(depth, pad_to, ret_mask=False)
+    depth = torch.from_numpy(depth).float()  # (h, w)
+    return depth
 
 # --- ScanNet ---
 

@@ -24,7 +24,6 @@ from src.utils.dataloader import get_local_split
 from src.utils.misc import tqdm_joblib
 from src.utils import comm
 from src.datasets.megadepth import MegaDepthDataset
-from src.datasets.rgb_ir import RGB_IRDataset
 from src.datasets.scannet import ScanNetDataset
 from src.datasets.sampler import RandomConcatSampler
 
@@ -203,7 +202,7 @@ class MultiSceneDataModule(pl.LightningDataModule):
         datasets = []
         augment_fn = self.augment_fn if mode == 'train' else None
         data_source = self.trainval_data_source if mode in ['train', 'val'] else self.test_data_source
-        if str(data_source).lower() == 'megadepth' or 'rgb_ir':
+        if str(data_source).lower() == 'megadepth':
             npz_names = [f'{n}.npz' for n in npz_names]
         for npz_name in tqdm(npz_names,
                              desc=f'[rank:{self.rank}] loading {mode} datasets',
@@ -222,18 +221,6 @@ class MultiSceneDataModule(pl.LightningDataModule):
             elif data_source == 'MegaDepth':
                 datasets.append(
                     MegaDepthDataset(data_root,
-                                     npz_path,
-                                     mode=mode,
-                                     min_overlap_score=min_overlap_score,
-                                     img_resize=self.mgdpt_img_resize,
-                                     df=self.mgdpt_df,
-                                     img_padding=self.mgdpt_img_pad,
-                                     depth_padding=self.mgdpt_depth_pad,
-                                     augment_fn=augment_fn,
-                                     coarse_scale=self.coarse_scale))
-            elif data_source == 'RGB_IR':
-                datasets.append(
-                    RGB_IRDataset(data_root,
                                      npz_path,
                                      mode=mode,
                                      min_overlap_score=min_overlap_score,

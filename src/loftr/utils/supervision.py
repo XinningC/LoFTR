@@ -59,16 +59,16 @@ def spvs_coarse(data, config):
     # warp kpts bi-directionally and resize them to coarse-level resolution
     # (no depth consistency check, since it leads to worse results experimentally)
     # (unhandled edge case: points with 0-depth will be warped to the left-up corner)
-    _, w_pt0_i = warp_kpts(grid_pt0_i, data['depth0'], data['depth1'], data['T_0to1'], data['K0'], data['K1'])
+    _, w_pt0_i = warp_kpts(grid_pt0_i, data['depth0'], data['depth1'], data['T_0to1'], data['K0'], data['K1']) # 把pt0图像上的顺序稀疏点投影到pt1上的对应坐标
     _, w_pt1_i = warp_kpts(grid_pt1_i, data['depth1'], data['depth0'], data['T_1to0'], data['K1'], data['K0'])
     w_pt0_c = w_pt0_i / scale1
     w_pt1_c = w_pt1_i / scale0
 
     # 3. check if mutual nearest neighbor
     w_pt0_c_round = w_pt0_c[:, :, :].round().long()
-    nearest_index1 = w_pt0_c_round[..., 0] + w_pt0_c_round[..., 1] * w1
+    nearest_index1 = w_pt0_c_round[..., 0] + w_pt0_c_round[..., 1] * w1 # 把pt0图像上的顺序稀疏点投影到pt1上的对应索引
     w_pt1_c_round = w_pt1_c[:, :, :].round().long()
-    nearest_index0 = w_pt1_c_round[..., 0] + w_pt1_c_round[..., 1] * w0
+    nearest_index0 = w_pt1_c_round[..., 0] + w_pt1_c_round[..., 1] * w0 # 把pt1图像上的顺序稀疏点投影到pt0上的对应索引
 
     # corner case: out of boundary
     def out_bound_mask(pt, w, h):
@@ -112,7 +112,7 @@ def spvs_coarse(data, config):
 def compute_supervision_coarse(data, config):
     assert len(set(data['dataset_name'])) == 1, "Do not support mixed datasets training!"
     data_source = data['dataset_name'][0]
-    if data_source.lower() in ['scannet', 'megadepth']:
+    if data_source.lower() in ['scannet', 'megadepth','rgb_ir']:
         spvs_coarse(data, config)
     else:
         raise ValueError(f'Unknown data source: {data_source}')
@@ -145,7 +145,7 @@ def spvs_fine(data, config):
 
 def compute_supervision_fine(data, config):
     data_source = data['dataset_name'][0]
-    if data_source.lower() in ['scannet', 'megadepth']:
+    if data_source.lower() in ['scannet', 'megadepth','rgb_ir']:
         spvs_fine(data, config)
     else:
         raise NotImplementedError

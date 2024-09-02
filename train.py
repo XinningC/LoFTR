@@ -25,9 +25,9 @@ def parse_args():
     # check documentation: https://pytorch-lightning.readthedocs.io/en/latest/common/trainer.html#trainer-flags
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
-        'data_cfg_path', type=str, help='data config path')
+        '--data_cfg_path', type=str, help='data config path')
     parser.add_argument(
-        'main_cfg_path', type=str, help='main config path')
+        '--main_cfg_path', type=str, default='configs/loftr/outdoor/loftr_ds_dense.py',help='main config path')
     parser.add_argument(
         '--exp_name', type=str, default='default_exp_name')
     parser.add_argument(
@@ -91,7 +91,7 @@ def main():
     
     # Callbacks
     # TODO: update ModelCheckpoint to monitor multiple metrics
-    ckpt_callback = ModelCheckpoint(monitor='auc@10', verbose=True, save_top_k=5, mode='max',
+    ckpt_callback = ModelCheckpoint(monitor='auc@10', verbose=True, save_top_k=100, mode='max',
                                     save_last=True,
                                     dirpath=str(ckpt_dir),
                                     filename='{epoch}-{auc@5:.3f}-{auc@10:.3f}-{auc@20:.3f}')
